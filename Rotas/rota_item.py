@@ -75,7 +75,7 @@ def listar_todos_itens():
         if isinstance(item['data_perda'], date):  # Certifique-se de usar a classe correta aqui
             item['data_perda'] = item['data_perda'].strftime('%d/%m/%Y')
 
-    return render_template('telainicial.html', itens=itens)
+    return render_template('Telainicial.html', itens=itens)
 
 # Exclusão de Item
 @itens_bp.route('/excluir/<int:id>', methods=['GET'])
