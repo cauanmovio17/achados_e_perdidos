@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devolução de Item</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            /* Fundo escuro */
+            color: #e0e0e0;
+            /* Texto claro */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin-top: 100px;
+            background-color: #1e1e1e;
+            /* Fundo do formulário */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-primary {
+            background-color: #1abc9c;
+            border-color: #1abc9c;
+        }
+
+        .btn-primary:hover {
+            background-color: #16a085;
+            border-color: #16a085;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #b0b0b0;
+        }
+
+        .form-control {
+            background-color: #2c2c2c;
+            border: 1px solid #424242;
+            color: #ffffff;
+        }
+
+        .form-control:focus {
+            border-color: #1abc9c;
+            box-shadow: 0 0 10px rgba(26, 188, 156, 0.4);
+        }
+
+        .form-control::placeholder {
+            color: #757575;
+        }
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #f1f1f1;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #00ffc3;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Registrar Devolução</h2>
+        <form action="{{ url_for('itens.devolver_item', id=item['id_item']) }}" method="POST">
+            <div class="mb-3">
+                <label for="nome_entregue" class="form-label">Nome de Quem Recebeu</label>
+                <input type="text" class="form-control" id="nome_entregue" name="nome_entregue"
+                    placeholder="Digite o nome" required>
+            </div>
+            <div class="mb-3">
+                <label for="data_entrega" class="form-label">Data da Devolução</label>
+                <input type="date" class="form-control" id="data_entrega" name="data_entrega" required>
+            </div>
+            <div class="mb-3">
+                <label for="nome_item" class="form-label">Item</label>
+                <input type="text" class="form-control" id="nome_item" name="nome_item" value="{{ item['nome_item'] }}"
+                    disabled>
+            </div>
+            <div class="mb-3 text-center">
+                <img src="{{ item.foto }}" class="img-fluid" style="max-width: 300px; height: auto;" alt="Capa do item">
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary w-100">Confirmar Devolução</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Preenche automaticamente o campo da data com a data atual
+        document.addEventListener('DOMContentLoaded', function () {
+            const dataAtual = new Date().toISOString().split('T')[0];
+            document.getElementById('data_entrega').value = dataAtual;
+        });
+    </script>
+
+    <footer>
+        &copy; 2024 Sistema de Controle de Itens Perdidos | Todos os direitos reservados
+    </footer>
+
+</body>
+
+</html>

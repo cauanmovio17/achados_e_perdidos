@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listagem de Categorias</title>
+
+    <!-- Incluindo o Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background-color: #121212; /* Fundo escuro */
+            color: #f1f1f1; /* Texto branco */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        header {
+            background-color: #1f1f1f; /* Barra de navegação escura */
+            padding: 15px 0;
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: #f8f9fa !important;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: rgb(250, 246, 246);
+            color: #1abc9c !important; /* Cor verde para hover nos links */
+        }
+
+        .navbar-nav .nav-link.active {
+            color: #1abc9c !important;
+        }
+
+        .card {
+            background-color: #000000; /* Fundo escuro nos cards */
+            color: #f1f1f1; /* Texto claro nos cards */
+            border: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border-radius: 0.75rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-title {
+            font-weight: bold;
+            color: #00ffc3;; /* Cor para o título dos cards */
+        }
+
+        h1 {
+            color: #f8f9fa; /* Cor do título principal */
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 2.5rem;
+        }
+
+        .btn-primary {
+            background-color: #00ffc3;
+            border-color: #00ffc3;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #00ffc3;
+            border-color: #00ffc3;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+            transition: background-color 0.3s;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .logop {
+            height: 80px;
+            width: auto;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .no-categories {
+            color: #ecf0f1;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #00bcd4;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- Barra de Navegação -->
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <img class="logop" src="../static/Logo.png" alt="Logo">
+                <ul class="navbar-nav ms-auto">
+                    {% if 'usuario' not in session %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('usuarios.login_usuario') }}">Login</a></li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Menu
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('usuarios.logout') }}">Logout</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('usuarios.listar_todos_usuarios') }}">Usuários</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('usuarios.criar_usuario') }}">Novo Usuário</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('categorias.nova_categoria') }}">Nova Categoria</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="mb-4">Categorias Cadastradas</h1>
+
+        <!-- Botão para adicionar nova categoria -->
+        <a href="{{ url_for('categorias.nova_categoria') }}" class="btn btn-primary mb-3">Adicionar Nova Categoria</a>
+
+        <!-- Exibindo as Categorias em Cards -->
+        <div class="row">
+            {% for categoria in categorias %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ categoria['nome_categoria'] }}</h5>
+                        <a href="{{ url_for('categorias.excluir_categoria', id=categoria.id_categoria) }}" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir?');">Excluir</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="col-12 no-categories">Não há categorias cadastradas.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2024 Sistema de Controle de Categorias | Todos os direitos reservados
+    </footer>
+
+    <!-- Scripts do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
