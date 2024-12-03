@@ -20,16 +20,20 @@ def novo_item():
         LOCAL_ENCONTRADO = request.form['local_encontrado']
         ID_CATEGORIA = request.form['id_categoria']
 
+        print('1')
+
         try:
             # Inserção no banco de dados
             conn = criar_conexao()
             cursor = conn.cursor(cursor_factory=RealDictCursor)
+            print('2')
             cursor.execute("""
                 INSERT INTO ITENS (nome_item, foto, caracteristicas, data_perda, local_encontrado, id_categoria)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """, (NOME_ITEM, FOTO, CARACTERISTICA, DATA_PERDA, LOCAL_ENCONTRADO, ID_CATEGORIA))
             
             conn.commit()
+            print('3')
             cursor.close()
             fechar_conexao(conn)
             return redirect(url_for('itens.listar_todos_itens'))
@@ -38,14 +42,17 @@ def novo_item():
             print(f"Erro ao cadastrar item: {erro}")
             return "Erro interno no servidor", 500
 
+    print('4')
     # Listagem de categorias
     usuario_nome = session.get('usuario')['login']
     conn = criar_conexao()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
+    print('5')
     cursor.execute("SELECT * FROM CATEGORIAS")
     categorias = cursor.fetchall()
     cursor.close()
     fechar_conexao(conn)
+    print('6')
    
     return render_template('cadastroItens.html', usuario_nome=usuario_nome, categorias=categorias)
 

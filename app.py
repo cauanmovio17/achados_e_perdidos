@@ -27,4 +27,4 @@ def home():
     return redirect(url_for('itens.listar_todos_itens'))
 
 if __name__ == "__main__":
-    app.run(port=5000, host="192.168.0.120", debug=True)
+    app.run(port=5000, debug=True)
