@@ -24,8 +24,8 @@ app.register_blueprint(categorias_bp, url_prefix='/categorias')
 
 @app.route('/')
 def home():
-    return render_template('teste.html')
-    # return redirect(url_for('itens.listar_todos_itens'))
+    # return render_template('teste.html')
+    return redirect(url_for('itens.listar_todos_itens'))
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
