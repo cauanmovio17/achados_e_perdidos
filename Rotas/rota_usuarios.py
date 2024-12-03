@@ -124,49 +124,60 @@ def alterar_usuario(id):
     if 'usuario' not in session or 'id_usuario' not in session['usuario']:
         return redirect(url_for('usuarios.login_usuario'))
 
-    conn = criar_conexao()
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    try:
+        conn = criar_conexao()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-    if request.method == 'POST':
-        NOME = request.form.get('NOME')
-        LOGIN = request.form.get('LOGIN')
-        SENHA = request.form.get('SENHA')
+        if request.method == 'POST':
+            NOME = request.form.get('NOME')
+            LOGIN = request.form.get('LOGIN')
+            SENHA = request.form.get('SENHA')
+
+            if not NOME or not LOGIN:
+                return render_template('alterarUsuario.html', 
+                                       mensagem='Nome e Login são obrigatórios!', 
+                                       usuario={'id_usuario': id, 'nome': NOME, 'login': LOGIN})
+
+            senhaCripto = sha256(SENHA.encode('utf-8')).hexdigest() if SENHA else None
+
+            try:
+                if senhaCripto:
+                    cursor.execute(
+                        """
+                        UPDATE USUARIOS 
+                        SET nome = %s, login = %s, senha = %s 
+                        WHERE id_usuario = %s
+                        """,
+                        (NOME, LOGIN, senhaCripto, id)
+                    )
+                else:
+                    cursor.execute(
+                        """
+                        UPDATE USUARIOS 
+                        SET nome = %s, login = %s 
+                        WHERE id_usuario = %s
+                        """,
+                        (NOME, LOGIN, id)
+                    )
+                conn.commit()
+                return redirect(url_for('usuarios.listar_todos_usuarios'))
+            except Exception as e:
+                conn.rollback()
+                return render_template('alterarUsuario.html', 
+                                       mensagem=f'Erro ao alterar usuário: {e}', 
+                                       usuario={'id_usuario': id, 'nome': NOME, 'login': LOGIN})
         
-        # Se não passar NOME ou LOGIN, exibe erro
-        if not NOME or not LOGIN:
-            return render_template('alterarUsuario.html', mensagem='Nome e Login são obrigatórios!', usuario={'ID_USUARIO': id, 'NOME': NOME, 'LOGIN': LOGIN})
+        # Preenche os campos do formulário para edição
+        cursor.execute("SELECT id_usuario, nome, login FROM USUARIOS WHERE id_usuario = %s", (id,))
+        usuario = cursor.fetchone()
+        if not usuario:
+            return render_template('alterarUsuario.html', mensagem='Usuário não encontrado!')
 
-        senhaCripto = None
-        if SENHA:
-            senhaCripto = sha256(SENHA.encode('utf-8')).hexdigest()
+        return render_template("alterarUsuario.html", usuario=usuario)
 
-        try:
-            if senhaCripto:
-                cursor.execute(
-                    "UPDATE USUARIOS SET nome = %s, login = %s, senha = %s WHERE ID_USUARIO = %s",
-                    (NOME, LOGIN, senhaCripto, id)
-                )
-            else:
-                cursor.execute(
-                    "UPDATE USUARIOS SET nome = %s, login = %s WHERE ID_USUARIO = %s",
-                    (NOME, LOGIN, id)
-                )
-            conn.commit()
-            return redirect(url_for('usuarios.listar_todos_usuarios'))
-        except Exception as e:
-            conn.rollback()
-            return render_template('alterarUsuario.html', mensagem=f'Erro ao alterar usuário: {e}', usuario={'ID_USUARIO': id, 'NOME': NOME, 'LOGIN': LOGIN})
-
-        finally:
-            cursor.close()
-            fechar_conexao(conn)
-
-    cursor.execute("SELECT ID_USUARIO as id_usuario, nome, login FROM USUARIOS WHERE ID_USUARIO = %s", (id,))
-    usuario = cursor.fetchone()
-    cursor.close()
-    fechar_conexao(conn)
-
-    return render_template("alterarUsuario.html", usuario=usuario)
+    finally:
+        cursor.close()
+        fechar_conexao(conn)
 
 # Rota para logout
 @usuarios_bp.route('/logout')
