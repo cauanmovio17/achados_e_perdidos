@@ -57,6 +57,11 @@ def novo_item():
     return render_template('cadastroItens.html', usuario_nome=usuario_nome, categorias=categorias)
 
 # Listagem de Todos os Itens
+from datetime import date
+from flask import render_template, request
+from conexao import criar_conexao, fechar_conexao
+from psycopg2.extras import RealDictCursor
+
 @itens_bp.route('/listar_itens', methods=['GET'])
 def listar_todos_itens():
     conn = criar_conexao()
