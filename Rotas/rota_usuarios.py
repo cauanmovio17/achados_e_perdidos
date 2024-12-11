@@ -1,8 +1,8 @@
 from flask import Blueprint, request, render_template, redirect, url_for, session
 from conexao import criar_conexao, fechar_conexao
 from hashlib import sha256
-
-from psycopg2.extras import RealDictCursor  # Importa o RealDictCursor
+from psycopg2.extras import RealDictCursor
+from functools import wraps
 
 usuarios_bp = Blueprint('usuarios', __name__)
 
@@ -11,8 +11,18 @@ def checar_senha(senhaBanco, senha):
     senha = sha256(senha.encode('utf-8')).hexdigest()
     return senha == senhaBanco
 
+# Função para verificar se o usuário está logado
+def login_required(func):
+    @wraps(func)  # Mantém metadados da função decorada
+    def wrapper(*args, **kwargs):
+        if 'usuario' not in session:
+            return redirect(url_for('usuarios.login_usuario'))
+        return func(*args, **kwargs)
+    return wrapper
+
 # Rota para criar usuário
 @usuarios_bp.route('/novousuario', methods=['GET', 'POST'])
+@login_required
 def criar_usuario():
     if request.method == 'POST':
         NOME = request.form.get('nome')
@@ -67,7 +77,6 @@ def login_usuario():
             fechar_conexao(conn)
 
         if usuarioEncontrado and checar_senha(usuarioEncontrado['senha'], SENHA):
-            # Sessão bem definida
             session['usuario'] = {
                 'id_usuario': usuarioEncontrado.get('id_usuario'),
                 'login': usuarioEncontrado.get('login')
@@ -80,10 +89,8 @@ def login_usuario():
 
 # Rota para listar todos os usuários
 @usuarios_bp.route('/listar_usuarios', methods=['GET'])
+@login_required
 def listar_todos_usuarios():
-    if 'usuario' not in session:
-        return redirect(url_for('usuarios.login_usuario'))
-
     try:
         conn = criar_conexao()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -97,16 +104,15 @@ def listar_todos_usuarios():
 
 # Rota para excluir usuário
 @usuarios_bp.route('/excluir_usuario/<int:id_usuario>', methods=['POST'])
+@login_required
 def excluir_usuario(id_usuario):
-    if 'usuario' not in session or 'id_usuario' not in session['usuario']:
-        return redirect(url_for('usuarios.login_usuario'))
-
     try:
         conn = criar_conexao()
         cursor = conn.cursor()
         cursor.execute("DELETE FROM USUARIOS WHERE ID_USUARIO = %s", (id_usuario,))
         conn.commit()
 
+        # Remove o usuário da sessão se for ele mesmo
         if session['usuario']['id_usuario'] == id_usuario:
             session.pop('usuario', None)
 
@@ -120,10 +126,8 @@ def excluir_usuario(id_usuario):
 
 # Rota para alterar usuário
 @usuarios_bp.route('/alterar/<int:id>', methods=['GET', 'POST'])
+@login_required
 def alterar_usuario(id):
-    if 'usuario' not in session or 'id_usuario' not in session['usuario']:
-        return redirect(url_for('usuarios.login_usuario'))
-
     conn = criar_conexao()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
@@ -132,13 +136,10 @@ def alterar_usuario(id):
         LOGIN = request.form.get('LOGIN')
         SENHA = request.form.get('SENHA')
         
-        # Se não passar NOME ou LOGIN, exibe erro
         if not NOME or not LOGIN:
             return render_template('alterarUsuario.html', mensagem='Nome e Login são obrigatórios!', usuario={'ID_USUARIO': id, 'NOME': NOME, 'LOGIN': LOGIN})
 
-        senhaCripto = None
-        if SENHA:
-            senhaCripto = sha256(SENHA.encode('utf-8')).hexdigest()
+        senhaCripto = sha256(SENHA.encode('utf-8')).hexdigest() if SENHA else None
 
         try:
             if senhaCripto:
@@ -156,7 +157,6 @@ def alterar_usuario(id):
         except Exception as e:
             conn.rollback()
             return render_template('alterarUsuario.html', mensagem=f'Erro ao alterar usuário: {e}', usuario={'ID_USUARIO': id, 'NOME': NOME, 'LOGIN': LOGIN})
-
         finally:
             cursor.close()
             fechar_conexao(conn)
@@ -172,4 +172,4 @@ def alterar_usuario(id):
 @usuarios_bp.route('/logout')
 def logout():
     session.pop('usuario', None)
-    return redirect(url_for('home'))
+    return redirect(url_for('usuarios.login_usuario'))

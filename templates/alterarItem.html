@@ -105,19 +105,38 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg container-fluid">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
             <img class="logop" src="../static/Logo.png" alt="Logo">
-            <ul class="navbar-nav ms-auto">
-                <form action="{{ url_for('usuarios.logout') }}">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <button type="submit" class="nav-link active">Sair</button>
-                        </li>
-                    </ul>
-                </form>
-            </ul>
-        </nav>
-    </header>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ms-auto">
+                    {% if 'usuario' not in session %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('usuarios.login_usuario') }}">Login</a></li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Menu
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ url_for('usuarios.logout') }}">Logout</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('itens.novo_item') }}">Novo Item</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('usuarios.criar_usuario') }}">Novo Usuário</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('categorias.nova_categoria') }}">Nova Categoria</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('usuarios.listar_todos_usuarios') }}">Lista Usuários</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('itens.listar_devolucoes') }}">Itens Devolvidos</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
 
     <main class="container my-5">
         <h2>Alterar Item</h2>

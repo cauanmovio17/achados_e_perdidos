@@ -1,13 +1,24 @@
 from flask import Blueprint, request, render_template, redirect, url_for, session
 from datetime import datetime, date
 from conexao import criar_conexao, fechar_conexao
-
+from functools import wraps
 from psycopg2.extras import RealDictCursor  # Importa o RealDictCursor
 
 
 itens_bp = Blueprint('itens', __name__)
 
+
+# Função para verificar se o usuário está logado
+def login_required(func):
+    @wraps(func)  # Mantém metadados da função decorada
+    def wrapper(*args, **kwargs):
+        if 'usuario' not in session:
+            return redirect(url_for('usuarios.login_usuario'))
+        return func(*args, **kwargs)
+    return wrapper
+
 @itens_bp.route('novoitem', methods=['GET', 'POST'])
+@login_required
 def novo_item():
     if 'usuario' not in session:
         return redirect(url_for('usuarios.login_usuario'))
@@ -57,30 +68,56 @@ def novo_item():
     return render_template('cadastroItens.html', usuario_nome=usuario_nome, categorias=categorias)
 
 # Listagem de Todos os Itens
-from datetime import date
-from flask import render_template, request
-from conexao import criar_conexao, fechar_conexao
-from psycopg2.extras import RealDictCursor
-
 @itens_bp.route('/listar_itens', methods=['GET'])
 def listar_todos_itens():
+    nome = request.args.get('nome')  # Obtém o nome da pesquisa
+    categoria_id = request.args.get('id_categoria')  # Obtém o ID da categoria da pesquisa
+    
+    # Cria a conexão com o banco de dados
     conn = criar_conexao()
-    # cursor = conn.cursor(cursor_factory=RealDictCursor)
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
-    cursor.execute("""
-        SELECT * FROM ITENS WHERE data_entrega IS NULL ORDER BY id_item DESC;
-    """)
+    # Define a consulta SQL inicial com base nos parâmetros
+    query = """
+        SELECT * FROM ITENS WHERE data_entrega IS NULL
+    """
+    filters = []
+    
+    # Adiciona filtro por nome
+    if nome:
+        query += " AND nome_item ILIKE %s"
+        filters.append(f"%{nome}%")
+    
+    # Adiciona filtro por categoria
+    if categoria_id:
+        query += " AND id_categoria = %s"
+        filters.append(categoria_id)
+    
+    query += " ORDER BY id_item DESC"
+    
+    # Executa a consulta com os filtros
+    cursor.execute(query, tuple(filters))
     
     itens = cursor.fetchall()
     cursor.close()
+    
+    # Recupera todas as categorias para o filtro no frontend
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    cursor.execute("SELECT * FROM CATEGORIAS")
+    categorias = cursor.fetchall()
+    cursor.close()
+    
+    # Fecha a conexão com o banco
     fechar_conexao(conn)
+    
     # Convertendo a data para o formato DD/MM/AAAA
     for item in itens:
-        if isinstance(item['data_perda'], date):  # Certifique-se de usar a classe correta aqui
+        if isinstance(item['data_perda'], date):
             item['data_perda'] = item['data_perda'].strftime('%d/%m/%Y')
+    
+    return render_template('Telainicial.html', itens=itens, categorias=categorias)
 
-    return render_template('Telainicial.html', itens=itens)
+
 
 # Exclusão de Item
 @itens_bp.route('/excluir/<int:id>', methods=['GET'])
@@ -95,6 +132,7 @@ def excluir_item(id):
 
 # Alteração de Item
 @itens_bp.route('/alterar/<int:id>', methods=['GET', 'POST'])
+@login_required
 def alterar_item(id):
     conn = criar_conexao()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -131,6 +169,7 @@ def alterar_item(id):
 
 # Listagem de Devoluções
 @itens_bp.route('/listar_devolucoes', methods=['GET'])
+@login_required
 def listar_devolucoes():
     conn = criar_conexao()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -154,6 +193,7 @@ def listar_devolucoes():
 
 # Devolução de Item
 @itens_bp.route('/devolver_item/<int:id>', methods=['GET', 'POST'])
+@login_required
 def devolver_item(id):
     if 'usuario' not in session:
         return redirect(url_for('usuarios.login_usuario'))

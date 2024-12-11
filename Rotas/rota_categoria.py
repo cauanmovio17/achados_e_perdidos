@@ -1,12 +1,22 @@
 from flask import Blueprint, request, render_template, redirect, url_for, session
 from conexao import criar_conexao, fechar_conexao
-
+from functools import wraps
 from psycopg2.extras import RealDictCursor  # Importa o RealDictCursor
 
 categorias_bp = Blueprint('categorias', __name__)
 
+# Função para verificar se o usuário está logado
+def login_required(func):
+    @wraps(func)  # Mantém metadados da função decorada
+    def wrapper(*args, **kwargs):
+        if 'usuario' not in session:
+            return redirect(url_for('usuarios.login_usuario'))
+        return func(*args, **kwargs)
+    return wrapper
+
 # Função para listar categorias
 @categorias_bp.route('/listar_categorias', methods=['GET'])
+@login_required
 def listar_categorias():
     conn = criar_conexao()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -17,6 +27,7 @@ def listar_categorias():
     return render_template('ListaCategoria.html', categorias=categorias)  # Passa as categorias para o template
 
 @categorias_bp.route('/novaCategoria', methods=['GET', 'POST'])
+@login_required
 def nova_categoria():
     if request.method == 'POST':
         nome_categoria = request.form['CATEGORIA']
@@ -47,6 +58,7 @@ def excluir_categoria(id):
     return redirect(url_for('.listar_categorias'))  # Redireciona para a listagem após exclusão
 
 @categorias_bp.route('/alterar/<int:id>', methods=['GET', 'POST'])
+@login_required
 def alterar_categoria(id):
     conn = criar_conexao()
     cursor = conn.cursor(cursor_factory=RealDictCursor)

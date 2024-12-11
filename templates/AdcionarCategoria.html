@@ -10,20 +10,20 @@
     <!-- Estilos adicionais -->
     <style>
         body {
-            background-color: #121212; /* Fundo escuro (igual à tela anterior) */
+            background-color: #ffffff; /* Fundo escuro (igual à tela anterior) */
             color: #f1f1f1; /* Texto claro */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .form-container {
-            background-color: #1f1f1f; /* Fundo escuro do contêiner */
+            background-color: #ffffff; /* Fundo escuro do contêiner */
             padding: 40px;
             border-radius: 12px; /* Bordas arredondadas */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Sombra suave */
+            box-shadow: 0 4px 10px #cc0000;
         }
 
         h1 {
-            color: #00ffc3; /* Verde-água claro para título */
+            color: #cc0000; /* Verde-água claro para título */
             margin-bottom: 30px;
             text-align: center;
             font-size: 28px;
@@ -37,8 +37,8 @@
         }
 
         .btn-primary {
-            background-color: #1abc9c; /* Verde-água forte */
-            border-color: #1abc9c;
+            background-color: #cc0000; /* Verde-água forte */
+            border-color: #cc0000;
             font-size: 16px;
             color: #fff;
             border-radius: 8px; /* Bordas arredondadas */
@@ -50,16 +50,16 @@
         }
 
         .btn-outline-secondary {
-            border-color: #6c757d; /* Cinza claro */
-            color: #f1f1f1; /* Texto claro */
+            border-color: #000000; /* Cinza claro */
+            color: #000000; /* Texto claro */
             font-size: 16px;
             border-radius: 8px;
             text-align: center;
         }
 
         .btn-outline-secondary:hover {
-            background-color: #6c757d; /* Fundo cinza claro */
-            color: #1f1f1f; /* Texto escuro */
+            background-color: #000000; /* Fundo cinza claro */
+            color: #fbfbfb; /* Texto escuro */
         }
 
         .form-group label {
@@ -73,7 +73,7 @@
             box-shadow: none;
             padding: 12px;
             font-size: 14px;
-            background-color: #333333; /* Fundo escuro */
+            background-color: #a4a4a4; /* Fundo escuro */
             color: #f1f1f1; /* Texto claro nos campos */
         }
 
@@ -82,19 +82,16 @@
             box-shadow: 0 0 10px rgba(0, 255, 195, 0.4); /* Sombra verde-água */
         }
 
-        /* Navbar Estilizada */
-        .navbar {
-            background-color: #1f1f1f; /* Fundo escuro da navbar */
-            border-bottom: 2px solid #00ffc3; /* Linha inferior verde-água */
+        header {
+            background-color: #cc0000;
+            padding: 0 10;
         }
-
         .navbar-nav .nav-link {
-            color: #f1f1f1; /* Links claros */
-            font-size: 16px;
+            color: #f1f1f1;
         }
 
         .navbar-nav .nav-link:hover {
-            color: #00ffc3; /* Destaque verde-água ao passar o mouse */
+            color: #000000;
         }
 
         .logop {
@@ -122,28 +119,35 @@
         <nav class="navbar navbar-expand-lg">
             <div class="container-fluid">
                 <img class="logop" src="../static/Logo.png" alt="Logo">
-                <ul class="navbar-nav ms-auto">
-                    {% if 'usuario' not in session %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('usuarios.login_usuario') }}">Login</a></li>
-                    {% else %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Menu
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('usuarios.logout') }}">Logout</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('itens.novo_item') }}">Novo Item</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('usuarios.listar_todos_usuarios') }}">Usuários</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('usuarios.criar_usuario') }}">Novo Usuário</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('categorias.nova_categoria') }}">Nova Categoria</a></li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                </ul>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav ms-auto">
+                        {% if 'usuario' not in session %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('usuarios.login_usuario') }}">Login</a></li>
+                        {% else %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Menu
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('usuarios.logout') }}">Logout</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('itens.novo_item') }}">Novo Item</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('usuarios.criar_usuario') }}">Novo Usuário</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('categorias.nova_categoria') }}">Nova Categoria</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('usuarios.listar_todos_usuarios') }}">Lista Usuários</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('itens.listar_devolucoes') }}">Itens Devolvidos</a></li>
+                            </ul>
+                        </li>
+                        {% endif %}
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </header>
+    
 
     <div class="container">
         <div class="form-container">
@@ -153,7 +157,7 @@
             <form action="{{ url_for('categorias.nova_categoria') }}" method="POST">
                 <div class="form-group mb-4">
                     <label for="CATEGORIA">Nome da Categoria</label>
-                    <input type="text" class="form-control" id="CATEGORIA" name="CATEGORIA" required>
+                    <input placeholder="Digite o nome da Categoria" type="text" class="form-control" id="CATEGORIA" name="CATEGORIA" required>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">Adicionar Categoria</button>
