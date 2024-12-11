@@ -12,7 +12,7 @@ def criar_conexao():
     #     database = "achadoseperdidos"
     # )
     try:
-        conexao = psycopg2.connect(DATABASE_URL, sslmode='require')
+        conexao = psycopg2.connect("postgres://postgres.mfnbgwwkhfhfzewpvmwt:kVJYHfeyACPiROlO@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require", sslmode='require')
         
         return conexao
     except Exception as e:
