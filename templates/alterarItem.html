@@ -176,7 +176,9 @@
 
             <div class="mb-3">
                 <label for="imagem_item" class="form-label">Imagem do Item</label>
-                <input type="text" class="form-control" id="imagem_item" name="foto" value="{{ item.foto }}">
+                <img src="{{ item.foto }}" alt="" width="200">
+                <input type="hidden" class="form-control" id="imagem_item" name="foto" value="{{ item.foto }}">
+                <input type="file" class="form-control" id="file" name="file">
             </div>
 
             <button type="submit" class="btn btn-primary">Alterar</button>

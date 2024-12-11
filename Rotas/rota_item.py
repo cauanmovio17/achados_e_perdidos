@@ -3,6 +3,7 @@ from datetime import datetime, date
 from conexao import criar_conexao, fechar_conexao
 from functools import wraps
 from psycopg2.extras import RealDictCursor  # Importa o RealDictCursor
+import vercel_blob
 
 
 itens_bp = Blueprint('itens', __name__)
@@ -17,6 +18,24 @@ def login_required(func):
         return func(*args, **kwargs)
     return wrapper
 
+def uploadFoto(arquivo) :
+    try:
+        nome_arquivo = arquivo.filename
+        url_image = vercel_blob.put(nome_arquivo, arquivo.read(), {})  # Envia o arquivo para o Blob
+        return url_image['url']
+    except Exception as e:
+        return "Erro ao processar a imagem: ", 500
+    
+def excluirFoto(arquivo):
+    try:
+        # Usa o método delete da biblioteca vercel_blob para remover a imagem
+        vercel_blob.delete(arquivo)  # Remove o arquivo do Blob
+        
+        print({"message": "Imagem deletada com sucesso", "success": True})
+    except Exception as e:
+        print({"error": "Erro ao deletar a imagem: " + str(e)})
+    
+
 @itens_bp.route('novoitem', methods=['GET', 'POST'])
 @login_required
 def novo_item():
@@ -25,26 +44,24 @@ def novo_item():
     
     if request.method == 'POST':
         NOME_ITEM = request.form['nome_item']
-        FOTO = request.form['foto']
+        # FOTO = request.form['foto']
         CARACTERISTICA = request.form['caracteristicas_item']
         DATA_PERDA = request.form['data_perdido']
         LOCAL_ENCONTRADO = request.form['local_encontrado']
         ID_CATEGORIA = request.form['id_categoria']
-
-        print('1')
+        
+        FOTO = uploadFoto(request.files.get('foto') )
 
         try:
             # Inserção no banco de dados
             conn = criar_conexao()
             cursor = conn.cursor(cursor_factory=RealDictCursor)
-            print('2')
             cursor.execute("""
                 INSERT INTO ITENS (nome_item, foto, caracteristicas, data_perda, local_encontrado, id_categoria)
                 VALUES (%s, %s, %s, %s, %s, %s)
             """, (NOME_ITEM, FOTO, CARACTERISTICA, DATA_PERDA, LOCAL_ENCONTRADO, ID_CATEGORIA))
             
             conn.commit()
-            print('3')
             cursor.close()
             fechar_conexao(conn)
             return redirect(url_for('itens.listar_todos_itens'))
@@ -53,17 +70,14 @@ def novo_item():
             print(f"Erro ao cadastrar item: {erro}")
             return "Erro interno no servidor", 500
 
-    print('4')
     # Listagem de categorias
     usuario_nome = session.get('usuario')['login']
     conn = criar_conexao()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
-    print('5')
     cursor.execute("SELECT * FROM CATEGORIAS")
     categorias = cursor.fetchall()
     cursor.close()
     fechar_conexao(conn)
-    print('6')
    
     return render_template('cadastroItens.html', usuario_nome=usuario_nome, categorias=categorias)
 
@@ -117,13 +131,16 @@ def listar_todos_itens():
     
     return render_template('Telainicial.html', itens=itens, categorias=categorias)
 
-
-
 # Exclusão de Item
 @itens_bp.route('/excluir/<int:id>', methods=['GET'])
 def excluir_item(id):
     conn = criar_conexao()
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
+    
+    cursor.execute("SELECT foto FROM ITENS WHERE ID_ITEM = %s", (id,))
+    item = cursor.fetchone()
+    excluirFoto(item['foto'])
+    
     cursor.execute("DELETE FROM ITENS WHERE ID_ITEM = %s", (id,))
     conn.commit()
     cursor.close()
@@ -144,6 +161,10 @@ def alterar_item(id):
         DATA_PERDA = request.form['data_perdido']
         LOCAL_ENCONTRADO = request.form['local_encontrado']
         ID_CATEGORIA = request.form['id_categoria']
+        
+        if request.files.get('file') :
+            excluirFoto(FOTO)
+            FOTO = uploadFoto(request.files.get('file') )
 
         cursor.execute("""
             UPDATE ITENS
