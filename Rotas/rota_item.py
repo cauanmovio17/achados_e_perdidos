@@ -192,25 +192,54 @@ def alterar_item(id):
 @itens_bp.route('/listar_devolucoes', methods=['GET'])
 @login_required
 def listar_devolucoes():
+    # Parâmetros de busca
+    nome = request.args.get('nome')  # Obtém o nome da pesquisa
+    id_categoria = request.args.get('id_categoria')  # Obtém o ID da categoria da pesquisa
+
+    # Cria a conexão com o banco de dados
     conn = criar_conexao()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-    cursor.execute("""
+    # Consulta básica com filtros dinâmicos
+    query = """
         SELECT nome_item, nome_entregue, data_entrega, foto
         FROM ITENS 
         WHERE data_entrega IS NOT NULL
-        ORDER BY data_entrega DESC
-    """)
+    """
+    filters = []
 
+    # Adiciona filtro por nome, se fornecido
+    if nome:
+        query += " AND nome_item ILIKE %s"
+        filters.append(f"%{nome}%")
+
+    # Adiciona filtro por categoria, se fornecido
+    if id_categoria:
+        query += " AND id_categoria = %s"
+        filters.append(id_categoria)
+
+    query += " ORDER BY data_entrega DESC"
+
+    # Executa a consulta com os filtros
+    cursor.execute(query, tuple(filters))
     devolucoes = cursor.fetchall()
+
+    # Consulta de categorias
+    cursor.execute("SELECT * FROM CATEGORIAS")
+    categorias = cursor.fetchall()
+
     cursor.close()
     fechar_conexao(conn)
-      # Convertendo a data para o formato DD/MM/AAAA
+
+    # Formata as datas para DD/MM/AAAA
     for devolucao in devolucoes:
-        if isinstance(devolucao['data_entrega'], date):  # Certifique-se de usar a classe correta aqui
+        if isinstance(devolucao['data_entrega'], date):
             devolucao['data_entrega'] = devolucao['data_entrega'].strftime('%d/%m/%Y')
 
-    return render_template('ListaDevolucao.html', devolucoes=devolucoes)
+    return render_template('ListaDevolucao.html', devolucoes=devolucoes, categorias=categorias)
+
+
+
 
 # Devolução de Item
 @itens_bp.route('/devolver_item/<int:id>', methods=['GET', 'POST'])

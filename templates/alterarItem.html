@@ -5,53 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alterar Item - Achados e Perdidos</title>
+    <link rel="icon" type="image/png" href="../static/Logo.png" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #121212; /* Fundo escuro */
-            color: #f1f1f1; /* Texto claro */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        header {
-            background-color: #1f1f1f; /* Barra de navegação escura */
-        }
-
-        .navbar-brand {
-            color: white !important; /* Cor do texto da navbar */
-            font-size: 24px; /* Ajuste do tamanho da fonte do logo */
-        }
-
-        .navbar-nav {
-            margin-left: auto; /* Garantir que a navegação vá para a direita */
-        }
-
-        .navbar-nav .nav-link {
-            color: white !important; /* Cor do texto da navbar */
-            font-size: 16px; /* Tamanho de fonte menor para melhor legibilidade */
-        }
-
-        .navbar-nav .nav-link.active {
-            font-weight: bold; /* Destaque para o link ativo */
-            text-decoration: underline; /* Sublinhado para dar ênfase */
-        }
-
-        .logop {
-            height: 80px; /* Ajuste da altura do logo */
-            margin-right: 50px; /* Espaçamento à direita do logo */
-        }
-
         .container {
-            max-width: 800px;
-            margin-top: 100px;
-            background-color: #2f313196; /* Fundo escuro para o formulário */
-            padding: 40px;
-            border-radius: 12px; /* Bordas arredondadas */
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); /* Sombra mais forte */
+            max-width: 600px;
+            margin-top: 50px;
+            background-color: #ffffff96;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px #cc0000;
+            color: #cc0000;
         }
 
         h2 {
-            color: #ecf0f1; /* Cor clara para o título */
+            color: #cc0000;
             text-align: center;
             font-size: 28px;
             margin-bottom: 40px;
@@ -59,45 +28,69 @@
 
         .form-label {
             font-weight: bold;
-            color: #ecf0f1; /* Texto claro para as labels */
+            color: #cc0000;
         }
 
         .form-control {
-            background-color: #34495e; /* Campo de entrada escuro */
-            border: 1px solid #7f8c8d; /* Borda suave */
-            color: #ecf0f1; /* Texto claro nos campos */
+            background-color: #ffffff;
+            border-color: black;
+            color: black;
         }
 
         .form-control:focus {
-            border-color: #1abc9c; /* Borda verde vibrante ao focar */
-            box-shadow: 0 0 10px rgba(26, 188, 156, 0.4); /* Efeito de sombra verde ao focar */
+            border-color: #cc0000;
+            box-shadow: 0 0 10px #cc0000;
         }
 
         .btn-primary {
-            background-color: #1abc9c; /* Cor verde */
-            border-color: #1abc9c;
+            background-color: #cc0000;
+            border-color: #cc0000;
             font-size: 16px;
             color: #fff;
-            border-radius: 8px; /* Bordas arredondadas */
+            border-radius: 8px;
         }
 
         .btn-primary:hover {
-            background-color: #16a085; /* Verde mais escuro ao passar o mouse */
-            border-color: #16a085;
+            background-color: #010101;
+            border-color: #cc0000;
         }
 
         .form-text {
-            color: #bdc3c7; /* Texto de ajuda em cor mais suave */
+            color: #bdc3c7;
         }
 
-        /* Adicionando responsividade */
         @media (max-width: 576px) {
             .container {
                 padding: 20px;
+                margin-top: 20px;
+                box-shadow: 0 4px 10px #cc0000;
             }
 
             h2 {
                 font-size: 24px;
+                margin-bottom: 30px;
+            }
+
+            img {
+                width: 100%;
+                height: auto;
+                max-width: 200px;
+                margin: 0 auto;
+                display: block;
+            }
+
+            .navbar .nav-link {
+                font-size: 14px;
+            }
+
+            .btn-primary {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar .nav-link {
+                font-size: 15px;
             }
         }
     </style>
@@ -105,38 +98,35 @@
 
 <body>
     <header>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <img class="logop" src="../static/Logo.png" alt="Logo">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavDropdown">
-                <ul class="navbar-nav ms-auto">
-                    {% if 'usuario' not in session %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('usuarios.login_usuario') }}">Login</a></li>
-                    {% else %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Menu
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ url_for('usuarios.logout') }}">Logout</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('itens.novo_item') }}">Novo Item</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('usuarios.criar_usuario') }}">Novo Usuário</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('categorias.nova_categoria') }}">Nova Categoria</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('usuarios.listar_todos_usuarios') }}">Lista Usuários</a></li>
-                            <li><a class="dropdown-item" href="{{ url_for('itens.listar_devolucoes') }}">Itens Devolvidos</a></li>
-                        </ul>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                </ul>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <img class="logop" src="{{ url_for('static', filename='Logo.png') }}" alt="Logo" />
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Menu
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{{ url_for('usuarios.logout') }}">Logout</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('itens.novo_item') }}">Novo Item</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('usuarios.criar_usuario') }}">Novo Usuário</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('categorias.nova_categoria') }}">Nova Categoria</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('usuarios.listar_todos_usuarios') }}">Lista Usuários</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('itens.listar_devolucoes') }}">Itens Devolvidos</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </nav>
-</header>
-
+        </nav>
+    </header>
 
     <main class="container my-5">
         <h2>Alterar Item</h2>
@@ -144,12 +134,14 @@
         <form action="{{ url_for('itens.alterar_item', id=item.id_item) }}" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="nome_item" class="form-label">Nome do Item</label>
-                <input type="text" class="form-control" id="nome_item" name="nome_item" value="{{ item.nome_item }}" placeholder="Digite o nome do item" required>
+                <input type="text" class="form-control" id="nome_item" name="nome_item" value="{{ item.nome_item }}"
+                    placeholder="Digite o nome do item" required>
             </div>
 
             <div class="mb-3">
                 <label for="caracteristicas_item" class="form-label">Características</label>
-                <textarea id="caracteristicas_item" name="caracteristicas_item" class="form-control" placeholder="Descreva o item" rows="4" required>{{ item.caracteristicas }}</textarea>
+                <textarea id="caracteristicas_item" name="caracteristicas_item" class="form-control"
+                    placeholder="Descreva o item" rows="4" required>{{ item.caracteristicas }}</textarea>
             </div>
 
             <div class="mb-3">
@@ -166,17 +158,19 @@
 
             <div class="mb-3">
                 <label for="data_perdido" class="form-label">Data Perdido</label>
-                <input class="form-control" type="date" id="data_perdido" name="data_perdido" value="{{ item.data_perda }}" required>
+                <input class="form-control" type="date" id="data_perdido" name="data_perdido"
+                    value="{{ item.data_perda }}" required>
             </div>
 
             <div class="mb-3">
                 <label for="local_encontrado" class="form-label">Local Perdido</label>
-                <input type="text" class="form-control" id="local_encontrado" name="local_encontrado" value="{{ item.local_encontrado }}" placeholder="Digite o local onde o item foi perdido" required>
+                <input type="text" class="form-control" id="local_encontrado" name="local_encontrado"
+                    value="{{ item.local_encontrado }}" placeholder="Digite o local onde o item foi perdido" required>
             </div>
 
             <div class="mb-3">
                 <label for="imagem_item" class="form-label">Imagem do Item</label>
-                <img src="{{ item.foto }}" alt="" width="200">
+                <img src="{{ item.foto }}" alt="Imagem do item" width="200">
                 <input type="hidden" class="form-control" id="imagem_item" name="foto" value="{{ item.foto }}">
                 <input type="file" class="form-control" id="file" name="file">
             </div>
@@ -184,6 +178,17 @@
             <button type="submit" class="btn btn-primary">Alterar</button>
         </form>
     </main>
+
+    <div class="sesi-logos">
+        <img class="sesi-logo" src="{{ url_for('static', filename='sesi.png') }}" alt="Logo SESI">
+        <img class="sesi-logo" src="{{ url_for('static', filename='senai.png') }}" alt="Logo SENAI">
+    </div>
+
+    <footer>
+        &copy; 2024 Sistema de Controle de Itens Perdidos | Todos os direitos reservados | Desenvolvido por alunos Senai <a class="sobrenos" href="{{ url_for('usuarios.sobre_nos') }}">Sobre nós</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

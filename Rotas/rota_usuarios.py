@@ -173,3 +173,10 @@ def alterar_usuario(id):
 def logout():
     session.pop('usuario', None)
     return redirect(url_for('usuarios.login_usuario'))
+
+
+# Rota para acessar 'SobreNos.html'
+@usuarios_bp.route('/sobre_nos')
+def sobre_nos():
+    return render_template('SobreNos.html')
+
