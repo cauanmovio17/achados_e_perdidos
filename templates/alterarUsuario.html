@@ -75,104 +75,111 @@
       }
 
       /*Corpo do site*/
-body {
-    background-color: #ffffff;
-    color: #f1f1f1;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-/*Estilização cabeçalho*/
-.navbar {
-    background-color: #CC0000;
-}
+      body {
+        background-color: #ffffff;
+        color: #f1f1f1;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      /*Estilização cabeçalho*/
+      .navbar {
+        background-color: #cc0000;
+      }
 
-.navbar-nav .nav-link {
-    color: #f1f1f1;
-}
+      .navbar-nav .nav-link {
+        color: #f1f1f1;
+      }
 
-.navbar-nav .nav-link:hover {
-    color: #000000;
-}
-/*Parte de baixo do site*/
-footer {
-    margin-top: 50px;
-    text-align: center;
-    color: #121212;
-    font-size: 14px;
-}
+      .navbar-nav .nav-link:hover {
+        color: #000000;
+      }
+      /*Parte de baixo do site*/
+      footer {
+        margin-top: 50px;
+        text-align: center;
+        color: #121212;
+        font-size: 14px;
+      }
 
-footer a {
-    color: #00ffc3;
-    text-decoration: none;
-}
+      footer a {
+        color: #00ffc3;
+        text-decoration: none;
+      }
 
-footer a:hover {
-    text-decoration: underline;
-}
+      footer a:hover {
+        text-decoration: underline;
+      }
 
-footer {
-    margin-top: 50px;
-    text-align: center;
-    color: #121212;
-    font-size: 14px;
-}
+      footer {
+        margin-top: 50px;
+        text-align: center;
+        color: #121212;
+        font-size: 14px;
+      }
 
-footer a {
-    color: #00ffc3;
-    text-decoration: none;
-}
+      footer a {
+        color: #00ffc3;
+        text-decoration: none;
+      }
 
-footer a:hover {
-    text-decoration: underline;
-}
+      footer a:hover {
+        text-decoration: underline;
+      }
 
-/* Estilos para Cards */
-.card {
-    background-color: #f9f9f9;
-    color: #121212;
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 10px #cc0000;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+      /* Estilos para Cards */
+      .card {
+        background-color: #f9f9f9;
+        color: #121212;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 10px #cc0000;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
 
-.card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px #cc0000;
-}
+      .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px #cc0000;
+      }
 
-.card-title {
-    font-weight: bold;
-    color: #e30613;
-}
+      .card-title {
+        font-weight: bold;
+        color: #e30613;
+      }
 
-.card-img-top {
-    width: 100%;
-    height: 200px;
-    object-fit: contain;
-    background-color: #f1f1f1;
-}
+      .card-img-top {
+        width: 100%;
+        height: 200px;
+        object-fit: contain;
+        background-color: #f1f1f1;
+      }
 
-/* Logo Principal */
+      /* Logo Principal */
 
-.logop {
-    height: 80px;
-    width: auto;
-} 
+      .logop {
+        height: 80px;
+        width: auto;
+      }
 
-.sesi-logos {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 30px;
-}
+      .sesi-logos {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 30px;
+      }
 
-.sesi-logo {
-    width: 200px;
-}
+      .sesi-logo {
+        width: 200px;
+      }
 
-.sobrenos{
-    color: #cc0000;
-}
-
+      .sobrenos {
+        color: #cc0000;
+      }
+      .btn-primary {
+            background-color: #cc0000;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            width: 100%;
+      }
     </style>
   </head>
 
@@ -318,16 +325,28 @@ footer a:hover {
       </form>
     </div>
 
-    <br>
+    <br />
 
     <div class="sesi-logos">
-      <img class="sesi-logo" src="{{ url_for('static', filename='sesi.png') }}" alt="Logo SESI">
-      <img class="sesi-logo" src="{{ url_for('static', filename='senai.png') }}" alt="Logo SENAI">
-  </div>
+      <img
+        class="sesi-logo"
+        src="{{ url_for('static', filename='sesi.png') }}"
+        alt="Logo SESI"
+      />
+      <img
+        class="sesi-logo"
+        src="{{ url_for('static', filename='senai.png') }}"
+        alt="Logo SENAI"
+      />
+    </div>
 
-  <footer>
-      &copy; 2024 Sistema de Controle de Itens Perdidos | Todos os direitos reservados | Desenvolvido por alunos Senai <a class="sobrenos" href="{{ url_for('usuarios.sobre_nos') }}">Sobre nós</a>
-  </footer>
+    <footer>
+      &copy; 2024 Sistema de Controle de Itens Perdidos | Todos os direitos
+      reservados | Desenvolvido por alunos Senai
+      <a class="sobrenos" href="{{ url_for('usuarios.sobre_nos') }}"
+        >Sobre nós</a
+      >
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   </body>
